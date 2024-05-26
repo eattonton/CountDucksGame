@@ -85,6 +85,20 @@ export default class CountShow extends Phaser.Scene {
             TT.eventsCenter.emit('event-buttonOk', { type: "result", numDuck: TT.NumDuck, numUser: this.m_ShowIndex });
         });
 
+        //菜单
+        let btnMenu = this.add.image(centerX+240,centerY+540,'btnMenu');
+        btnMenu.setInteractive();
+        btnMenu.setScale(1.8);
+        btnMenu.on('pointerdown',(pointer, event)=>{
+            if (!TT.IsStart) return;
+            // 阻止事件冒泡
+            TT.IsStart = false;
+            //显示菜单
+            this.scene.wake("Menu");
+            // 这里可以添加你的逻辑  
+            TT.eventsCenter.emit('event-buttonMenu', {  });
+        })
+
         // 监听事件  
         TT.eventsCenter.on('event-buttonNext', (data) => {
             if (data["data"]) {
@@ -95,9 +109,9 @@ export default class CountShow extends Phaser.Scene {
                 }
                 //记录
                 TT.SaveRecord();
-                //更新显示
-                this.CreateRecordMax();
             }
+            //更新显示
+            this.CreateRecordMax();
             //创建鸭子
             this.Reset();
         });

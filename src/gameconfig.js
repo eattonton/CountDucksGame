@@ -26,6 +26,12 @@ class TTGameConfig {
             this.NumRecordMax = data["numRecordMax"] || 0;
         }
     }
+
+    ClearRecord(){
+        localStorage.removeItem("data");
+        this.NumMax = 5;
+        this.NumRecordMax = 0;
+    }
 }
  
 const instance = new TTGameConfig();

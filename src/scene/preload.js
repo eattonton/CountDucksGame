@@ -6,7 +6,8 @@ import pngBtnOk from "../assets/btn_ok.png"
 import pngBtnNext from "../assets/btn_next.png"
 import pngCup from "../assets/cup.png"
 import pngWrong from "../assets/wrong.png"
-import pngUi from "../assets/ui.png"
+import pngLogo from "../assets/logo.png"
+import pngMenu from "../assets/menu.png"
 import mp3Yelp from "../assets/yelp.mp3"
 
 export default class Preload extends Phaser.Scene {
@@ -26,8 +27,8 @@ export default class Preload extends Phaser.Scene {
         this.load.image('btnNext', pngBtnNext);
         this.load.image('iconCup', pngCup);
         this.load.image('iconWrong', pngWrong);
-        this.load.image('iconUi', pngUi);
-
+        this.load.image('iconLogo', pngLogo);
+        this.load.image('btnMenu',pngMenu);
         this.load.audio('musicYelp', mp3Yelp);
 
         // 监听加载过程
