@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "parcel src/index.html",
-    "build": "parcel build src/index.html"
+    "start": "parcel serve src/index.html --no-cache",
+    "build": "parcel build src/index.html --public-url ./ --no-source-maps --no-cache --detailed-report"
   },
   "keywords": [],
   "author": "",
