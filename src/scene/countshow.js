@@ -33,6 +33,8 @@ export default class CountShow extends Phaser.Scene {
     /** @type {Phaser.GameObjects.Text} */
     m_TextRecord = null;
 
+    m_Step = 20;
+     
     create() {
         //声音对象
         let musicYelp = this.sound.add('musicYelp');
@@ -111,7 +113,7 @@ export default class CountShow extends Phaser.Scene {
         //console.log(this.m_Ducks.length);
         if (this.m_Ducks.length == 0) return;
 
-        if (RandomInt(0, 220) == 0) {
+        if (RandomInt(0, 100) == 0) {
             this.m_IsAnim = true;
             let idx = RandomInt(0, this.m_Ducks.length - 1);
             if (RandomInt(0, 4) == 0) {
@@ -158,9 +160,23 @@ export default class CountShow extends Phaser.Scene {
             let posy = parseInt(posIdx / col);
             let duck0 = this.add.sprite(posx * (500 / col) + 140, posy * (780 / row) + 320, 'duck', 0).setOrigin(0.5);
             duck0.setScale(1.4);
-            let isFlip = RandomInt(0, 3);
-            if (isFlip == 0) {
+            if (RandomInt(0, 3) == 0) {
                 duck0.setFlipX(true);
+            }
+
+            let mm = RandomInt(0, 4);
+            if(mm == 0){
+                duck0.setX(duck0.x - this.m_Step);
+            }
+            else if(mm == 1){
+                duck0.setX(duck0.x + this.m_Step);
+            }
+            mm = RandomInt(0, 4);
+            if(mm == 0){
+                duck0.setY(duck0.y - this.m_Step);
+            }
+            else if(mm == 1){
+                duck0.setY(duck0.y + this.m_Step);
             }
 
             duck0.on('animationcomplete', (animation, frame) => {
@@ -192,32 +208,32 @@ export default class CountShow extends Phaser.Scene {
 
     PlayWalkAnim(idx) {
         let idir = RandomInt(0, 7);
-        let stepX = 10;
-        let stepY = 10;
+        let stepX = 0;
+        let stepY = 0;
         if (idir == 0) {
-            stepX = 10;
+            stepX = this.m_Step;
             stepY = 0;
         } else if (idir == 1) {
-            stepX = 10;
-            stepY = -10;
+            stepX = this.m_Step;
+            stepY = -this.m_Step;
         } else if (idir == 2) {
             stepX = 0;
-            stepY = -10;
+            stepY = -this.m_Step;
         } else if (idir == 3) {
-            stepX = -10;
-            stepY = -10;
+            stepX = -this.m_Step;
+            stepY = -this.m_Step;
         } else if (idir == 4) {
-            stepX = -10;
+            stepX = -this.m_Step;
             stepY = 0;
         } else if (idir == 5) {
-            stepX = -10;
-            stepY = 10;
+            stepX = -this.m_Step;
+            stepY = this.m_Step;
         } else if (idir == 6) {
             stepX = 0;
-            stepY = 10;
+            stepY = this.m_Step;
         } else if (idir == 7) {
-            stepX = 10;
-            stepY = 10;
+            stepX = this.m_Step;
+            stepY = this.m_Step;
         }
         let destX = this.m_Ducks[idx].x + stepX;
         let destY = this.m_Ducks[idx].y + stepY;
