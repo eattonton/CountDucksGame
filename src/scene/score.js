@@ -70,16 +70,7 @@
         //  pageBottom.fillRect(100, 400, 600, 300); // 示例位置和尺寸  
 
         //  // 使用 Tweens 来创建翻页动画  
-        //  this.tweens.add({  
-        //      targets: pageBottom,  
-        //      y: 100, // 向上移动到与 pageTop 相同的 y 坐标  
-        //      duration: 1000, // 动画持续时间（毫秒）  
-        //      ease: 'Cubic.easeInOut', // 缓动函数  
-        //      onComplete: () => {  
-        //          // 动画完成后可以执行的回调函数  
-        //          // 例如，你可以在这里隐藏 pageBottom 或添加新的页面内容  
-        //      }  
-        //  });  
+      
 
         // this.gameTimer = this.time.addEvent({
         //         delay: 1000,

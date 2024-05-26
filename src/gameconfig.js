@@ -8,14 +8,23 @@ class TTGameConfig {
         this.NumDuck = 0;
         /**@type {boolean} 是否开始*/
         this.IsStart = false;
+        /** @type {number} */
+        this.NumMax = 5;
+        /** @type {number} */
+        this.NumRecordMax = 0;
     }
 
-    SetRecord(){
-
+    SaveRecord(){
+        let data = {numMax:this.NumMax, numRecordMax:this.NumRecordMax};
+        localStorage.setItem("data",JSON.stringify(data));
     }
 
-    GetRecord(){
-        
+    RestoreRecord(){
+        let data=JSON.parse(localStorage.getItem("data"));
+        if(data){
+            this.NumMax = data["numMax"] || 5;
+            this.NumRecordMax = data["numRecordMax"] || 0;
+        }
     }
 }
  

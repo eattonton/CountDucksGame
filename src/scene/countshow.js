@@ -11,9 +11,10 @@ export default class CountShow extends Phaser.Scene {
     }
 
     preload() {
-
+        //获得最新记录
+        TT.RestoreRecord();
     }
- 
+
     /** @type {number} 显示的序号 */
     m_ShowIndex = 0;
     /** @type {TimeCards} */
@@ -23,14 +24,19 @@ export default class CountShow extends Phaser.Scene {
 
     /** @type {boolean} */
     m_IsAnim = false;
+ 
+    m_MinX = 140;
+    m_MinY = 320;
+    m_MaxX = 540;
+    m_MaxY = 1100;
 
-    /** @type {number} */
-    m_NumMax = 10;
+    /** @type {Phaser.GameObjects.Text} */
+    m_TextRecord = null;
 
     create() {
         //声音对象
         let musicYelp = this.sound.add('musicYelp');
-        
+
         let centerX = this.scale.width / 2;
         let centerY = this.scale.height / 2;
         //背景色
@@ -42,9 +48,11 @@ export default class CountShow extends Phaser.Scene {
         btnStart.setInteractive();
         btnStart.on('pointerdown', (pointer) => {
             //开始游戏 
+            TT.eventsCenter.emit('event-buttonStart', {});
             //开始倒计时
             StartTimeCountDown(this, () => {
                 maskbg.destroy();
+                //创建鸭子
                 this.Reset();
             });
             //隐藏自己
@@ -77,34 +85,61 @@ export default class CountShow extends Phaser.Scene {
 
         // 监听事件  
         TT.eventsCenter.on('event-buttonNext', (data) => {
+            if (data["data"]) {
+                //回答正确 增加难度
+                TT.NumMax += 5;
+                if (TT.NumMax >= 90) {
+                    TT.NumMax = 90;
+                }
+                //记录
+                TT.SaveRecord();
+                //更新显示
+                this.CreateRecordMax();
+            }
+            //创建鸭子
             this.Reset();
         });
 
+        this.CreateRecordMax();
         //遮罩mask
         let maskbg = CreateSceneMask(this);
     }
 
     update() {
-        if(!TT.IsStart) return;
-        if(this.m_IsAnim) return;
+        if (!TT.IsStart) return;
+        if (this.m_IsAnim) return;
         //console.log(this.m_Ducks.length);
-        if(this.m_Ducks.length == 0) return;
-        
-        let iAnim = RandomInt(0,300);
-        if(iAnim == 0){
+        if (this.m_Ducks.length == 0) return;
+
+        if (RandomInt(0, 220) == 0) {
             this.m_IsAnim = true;
-            let idx = RandomInt(0,this.m_Ducks.length-1);
+            let idx = RandomInt(0, this.m_Ducks.length - 1);
+            if (RandomInt(0, 4) == 0) {
+                this.m_Ducks[idx].setFlipX(true);
+            }
             this.m_Ducks[idx].play("duck-yelp");
+
+            if (TT.NumMax >= 15 && RandomInt(0, 2) == 0) {
+                //移动位置
+                this.PlayWalkAnim(idx);
+
+            }
         }
-        
+
     }
 
     Reset() {
+        if (TT.NumMax <= 5) {
+            TT.NumDuck = RandomInt(4, 5);
+        }
+        else {
+            TT.NumDuck = RandomInt(TT.NumMax - 4, TT.NumMax);
+        }
+
         this.m_ShowIndex = 0;
         this.m_Card0.RestoreCards();
         TT.IsStart = true;
-        //创建鸭子
-        TT.NumDuck = RandomInt(this.m_NumMax-4, this.m_NumMax);
+
         //重新生成鸭子
         this.CreateDucks(TT.NumDuck);
     }
@@ -121,16 +156,16 @@ export default class CountShow extends Phaser.Scene {
             let posIdx = posIdxs[i];
             let posx = posIdx % col;
             let posy = parseInt(posIdx / col);
-            let duck0 = this.add.sprite(posx * (500 / col) + 140, posy * (680 / row) + 320, 'duck', 0).setOrigin(0.5);
+            let duck0 = this.add.sprite(posx * (500 / col) + 140, posy * (780 / row) + 320, 'duck', 0).setOrigin(0.5);
             duck0.setScale(1.4);
             let isFlip = RandomInt(0, 3);
             if (isFlip == 0) {
                 duck0.setFlipX(true);
             }
 
-            duck0.on('animationcomplete', (animation, frame) =>{
+            duck0.on('animationcomplete', (animation, frame) => {
                 this.m_IsAnim = false;
-            })  
+            })
             this.m_Ducks.push(duck0);
         }
     }
@@ -143,5 +178,63 @@ export default class CountShow extends Phaser.Scene {
         this.m_Ducks = [];
     }
 
+    CreateRecordMax(){
+        if(!this.m_TextRecord){
+            this.m_TextRecord = this.add.text(350, 140, '', {
+                fontFamily: '黑体',
+                fontSize: '38px',
+                fill: '#ff0000'
+            });
+        }
+
+        this.m_TextRecord.setText(`最佳记录:${TT.NumRecordMax}只`);
+    }
+
+    PlayWalkAnim(idx) {
+        let idir = RandomInt(0, 7);
+        let stepX = 10;
+        let stepY = 10;
+        if (idir == 0) {
+            stepX = 10;
+            stepY = 0;
+        } else if (idir == 1) {
+            stepX = 10;
+            stepY = -10;
+        } else if (idir == 2) {
+            stepX = 0;
+            stepY = -10;
+        } else if (idir == 3) {
+            stepX = -10;
+            stepY = -10;
+        } else if (idir == 4) {
+            stepX = -10;
+            stepY = 0;
+        } else if (idir == 5) {
+            stepX = -10;
+            stepY = 10;
+        } else if (idir == 6) {
+            stepX = 0;
+            stepY = 10;
+        } else if (idir == 7) {
+            stepX = 10;
+            stepY = 10;
+        }
+        let destX = this.m_Ducks[idx].x + stepX;
+        let destY = this.m_Ducks[idx].y + stepY;
+        if (destX >= this.m_MinX && destX <= this.m_MaxX
+            && destY >= this.m_MinY && destY <= this.m_MaxY
+        ) {
+            this.tweens.add({
+                targets: this.m_Ducks[idx],
+                x: destX,
+                y: destY,
+                duration: 400, // 动画持续时间（毫秒）  
+                ease: 'Cubic.easeInOut', // 缓动函数  
+                yoyo: false,
+                onComplete: () => {
+                }
+            });
+        }
+    }
 
 }

@@ -46,28 +46,34 @@ export default class Menu extends Phaser.Scene {
         container.add(next);  
         container.add(wrong);
         container.add(text);
-
+        //是否答对了
+        let isSuccess = false;
         // 监听事件  
         TT.eventsCenter.on('event-buttonOk', (data) => {
              if(data["numDuck"] == data["numUser"]){
                 wrong.setVisible(false);
                 win.setVisible(true);
+                text.setText("真厉害");
+                isSuccess = true;
+                if(data["numDuck"] > TT.NumRecordMax) {
+                    TT.NumRecordMax = data["numDuck"];
+                }
              }else{
                 wrong.setVisible(true);
                 win.setVisible(false);
+                text.setText(`错啦,有${data["numDuck"]}只`);
+                isSuccess = false;
              }
              
          });
-         
-        //不显示
-        //container.visible = false;
+          
         //添加事件
         next.setInteractive({ useHandCursor: true }); // 使用手型光标（可选）  
   
         // 为文本对象添加点击事件的监听器  
         next.on('pointerdown', (pointer, event) =>{  
            this.scene.sleep('Menu');
-           TT.eventsCenter.emit('event-buttonNext', { data: 'some data' }); 
+           TT.eventsCenter.emit('event-buttonNext', { data: isSuccess }); 
         });  
     }
 }
