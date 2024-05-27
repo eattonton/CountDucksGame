@@ -25,14 +25,14 @@ export default class Menu extends Phaser.Scene {
         let centerY = this.scale.height / 2;
 
         let mask = CreateSceneMask(this);
-        this.m_containerDlg = this.CreateResultDlg(centerX,centerY);
+        this.m_containerDlg = this.CreateResultDlg(centerX, centerY);
         this.m_containerDlg.setVisible(false);
 
         this.m_containerMenu = this.CreateMenuDlg(centerX, centerY);
         this.m_containerMenu.setVisible(false);
     }
 
-    CreateMenuDlg(centerX, centerY){
+    CreateMenuDlg(centerX, centerY) {
         let dlg = this.add.graphics();
         dlg.fillStyle(0xfff9e1);
         dlg.lineStyle(10, 0xf49d5b);
@@ -51,16 +51,16 @@ export default class Menu extends Phaser.Scene {
         container.add(btnB);
         container.add(btnC);
         container.add(logo);
-         // 监听事件  
-         TT.eventsCenter.on('event-buttonMenu', (data) => {
+        // 监听事件  
+        TT.eventsCenter.on('event-buttonMenu', (data) => {
             this.m_containerMenu.setVisible(true);
             this.m_containerDlg.setVisible(false);
- 
+
         });
         return container;
     }
 
-    CreateResultDlg(centerX,centerY){
+    CreateResultDlg(centerX, centerY) {
         let dlg = this.add.graphics();
         dlg.fillStyle(0xfff9e1);
         dlg.lineStyle(10, 0xf49d5b);
@@ -96,7 +96,7 @@ export default class Menu extends Phaser.Scene {
         container.add(btnNext);
         container.add(wrong);
         container.add(text);
-        
+
         // 监听事件  
         TT.eventsCenter.on('event-buttonOk', (data) => {
             this.m_containerMenu.setVisible(false);
@@ -127,20 +127,23 @@ export default class Menu extends Phaser.Scene {
         });
     }
 
-    CreateBtnSingle(){
+    CreateBtnSingle() {
         return this.CreateButton(0, -120, "单人玩", (pointer, event) => {
             this.scene.sleep('Menu');
             TT.eventsCenter.emit('event-buttonNext', { data: false });
         });
     }
 
-    CreateBtnDouble(){
+    CreateBtnDouble() {
         return this.CreateButton(0, 0, "双人玩", (pointer, event) => {
-            
+            this.scene.sleep('CountShow');
+            this.scene.sleep('Menu');
+            this.scene.sleep('TitleScene');
+            this.scene.wake('MultiPlayer');
         });
     }
 
-    CreateBtnClear(){
+    CreateBtnClear() {
         return this.CreateButton(0, 120, "清除历史", (pointer, event) => {
             this.scene.sleep('Menu');
             TT.ClearRecord();

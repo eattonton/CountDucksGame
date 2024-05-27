@@ -9,6 +9,7 @@ import pngWrong from "../assets/wrong.png"
 import pngLogo from "../assets/logo.png"
 import pngMenu from "../assets/menu.png"
 import mp3Yelp from "../assets/yelp.mp3"
+import pngController from "../assets/controller.png"
 
 export default class Preload extends Phaser.Scene {
     constructor() {
@@ -30,7 +31,7 @@ export default class Preload extends Phaser.Scene {
         this.load.image('iconLogo', pngLogo);
         this.load.image('btnMenu',pngMenu);
         this.load.audio('musicYelp', mp3Yelp);
-
+        this.load.image('iconController', pngController);
         // 监听加载过程
         this.load.on('progress', (value) => {
             this.UpdateProgressBar(value)
@@ -73,6 +74,8 @@ export default class Preload extends Phaser.Scene {
         this.scene.launch('Menu');
         this.scene.sleep('Menu');
         this.scene.launch('TitleScene');
+        this.scene.launch('MultiPlayer');
+        this.scene.sleep('MultiPlayer');
     }
 
 }

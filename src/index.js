@@ -3,7 +3,7 @@ import TT from "./gameconfig";
 import TitleScene from "./scene/titlescene"
 import CountShow from "./scene/countshow";
 import Menu from "./scene/menu";
-import CanvasScene from "./scene/canvasscene";
+import MultiPlayer from "./scene/multiplayerscene";
 import Preload from "./scene/preload";
 
 const config = {
@@ -25,7 +25,7 @@ const config = {
             gravity: {y:0}
         },
     },
-    scene:[Preload,CountShow,Menu,TitleScene]
+    scene:[Preload,CountShow,Menu,TitleScene,MultiPlayer]
  
 }
 

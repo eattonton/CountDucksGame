@@ -13,8 +13,6 @@ export default class CountDownScene extends Phaser.Scene {
     }
 
     create() {
-        // 假设你想要限制相机只能看到场景中的 (100, 100) 到 (300, 300) 区域  
-        // this.cameras.main.setViewport(100, 100, 1200, 1200);
         const graphics = this.add.graphics({ fillStyle: { color: 0xff0000, alpha: 0.5 } });
         graphics.fillRect(0, 200, this.scale.width, 10);
 
