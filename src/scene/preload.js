@@ -70,10 +70,12 @@ export default class Preload extends Phaser.Scene {
     LoadComplete() {
         // 进度条加载完毕后的操作
         this.m_ProgressBar.destroy();
-        this.scene.launch('CountShow');
+        this.scene.launch('Ducks');
         this.scene.launch('Menu');
-        this.scene.sleep('Menu');
-        this.scene.launch('TitleScene');
+        this.scene.launch('CountShow');
+        //this.scene.sleep('Menu');
+        
+        this.scene.sleep('TitleScene');
         this.scene.launch('MultiPlayer');
         this.scene.sleep('MultiPlayer');
     }

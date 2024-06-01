@@ -21,15 +21,18 @@ export default class Menu extends Phaser.Scene {
     m_containerMenu = null;
 
     create() {
-        let centerX = this.scale.width / 2;
-        let centerY = this.scale.height / 2;
-
-        let mask = CreateSceneMask(this);
+        let centerX = TT.width / 2;
+        let centerY = TT.height / 2;
+        //let mask = CreateSceneMask(this);
         this.m_containerDlg = this.CreateResultDlg(centerX, centerY);
         this.m_containerDlg.setVisible(false);
 
         this.m_containerMenu = this.CreateMenuDlg(centerX, centerY);
-        this.m_containerMenu.setVisible(false);
+        //this.m_containerMenu.setVisible(false);
+       // this.cameras.main.setViewport(0,0,window.innerWidth,window.innerHeight);
+       this.cameras.main.setViewport(0,0,TT.width,TT.height);
+       this.cameras.main.setZoom(0.6);
+       
     }
 
     CreateMenuDlg(centerX, centerY) {
@@ -45,6 +48,7 @@ export default class Menu extends Phaser.Scene {
         let btnA = this.CreateBtnSingle();
         let btnB = this.CreateBtnDouble();
         let btnC = this.CreateBtnClear();
+         
         let container = this.add.container(centerX, centerY);
         container.add(dlg);
         container.add(btnA);
@@ -96,7 +100,6 @@ export default class Menu extends Phaser.Scene {
         container.add(btnNext);
         container.add(wrong);
         container.add(text);
-
         // 监听事件  
         TT.eventsCenter.on('event-buttonOk', (data) => {
             this.m_containerMenu.setVisible(false);
@@ -140,6 +143,7 @@ export default class Menu extends Phaser.Scene {
             this.scene.sleep('Menu');
             this.scene.sleep('TitleScene');
             this.scene.wake('MultiPlayer');
+            TT.eventsCenter.emit('event-buttonTwo', { data: false });
         });
     }
 

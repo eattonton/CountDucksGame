@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 import TT from "../gameconfig"
-import { GetRandQueueInRange, RandomInt } from "../js/math"
 import { TimeCards, StartTimeCountDown, CreateSceneMask } from "../sprite/timecard";
 
 export default class CountShow extends Phaser.Scene {
@@ -19,32 +18,27 @@ export default class CountShow extends Phaser.Scene {
     m_ShowIndex = 0;
     /** @type {TimeCards} */
     m_Card0;
-    /** @type {Array<Phaser.GameObjects.sprite>} */
-    m_Ducks = [];
-
-    /** @type {boolean} */
-    m_IsAnim = false;
- 
-    m_MinX = 140;
-    m_MinY = 320;
-    m_MaxX = 540;
-    m_MaxY = 1100;
-
+    
     /** @type {Phaser.GameObjects.Text} */
     m_TextRecord = null;
 
-    m_Step = 20;
-     
+    /** @type {Phaser.GameObjects.Text} */
+    m_textRule = null;
+
     create() {
         //声音对象
         let musicYelp = this.sound.add('musicYelp');
 
-        let centerX = this.scale.width / 2;
-        let centerY = this.scale.height / 2;
+        let centerX = TT.width / 2;
+        let centerY = TT.height / 2;
         //背景色
-        this.cameras.main.setBackgroundColor(0xF3E88E);
+        this.cameras.main.setBackgroundColor(0xf3e88e);
+        this.cameras.main.setViewport(0,0,TT.width,TT.height);
+        this.cameras.main.setZoom(0.6);
+        //this.cameras.main.centerOn(centerX, centerY);
         //绘制开始按钮
         let btnStart = this.add.image(centerX, centerY, 'btnStart').setOrigin(0.5);
+        btnStart.setVisible(false);
         btnStart.setScale(3);
         btnStart.setDepth(100);
         btnStart.setInteractive();
@@ -53,7 +47,7 @@ export default class CountShow extends Phaser.Scene {
             TT.eventsCenter.emit('event-buttonStart', {});
             //开始倒计时
             StartTimeCountDown(this, () => {
-                maskbg.destroy();
+               // maskbg.destroy();
                 //创建鸭子
                 this.Reset();
             });
@@ -61,7 +55,7 @@ export default class CountShow extends Phaser.Scene {
             btnStart.destroy();
         })
         //计数卡片
-        this.m_Card0 = new TimeCards(this, 250, 120, 99);
+        this.m_Card0 = new TimeCards(this, centerX-130, centerY-600, 99);
         // 添加点击事件  
         this.input.on('pointerdown', (pointer) => {
             if (!TT.IsStart) return;
@@ -101,6 +95,7 @@ export default class CountShow extends Phaser.Scene {
 
         // 监听事件  
         TT.eventsCenter.on('event-buttonNext', (data) => {
+            this.m_textRule.setVisible(false);
             if (data["data"]) {
                 //回答正确 增加难度
                 TT.NumMax += 5;
@@ -118,99 +113,29 @@ export default class CountShow extends Phaser.Scene {
 
         this.CreateRecordMax();
         //遮罩mask
-        let maskbg = CreateSceneMask(this);
+        //let maskbg = CreateSceneMask(this);
+        //绘制title
+        this.DrawTitle();
     }
 
     update() {
-        if (!TT.IsStart) return;
-        if (this.m_IsAnim) return;
-        //console.log(this.m_Ducks.length);
-        if (this.m_Ducks.length == 0) return;
-
-        if (RandomInt(0, 100) == 0) {
-            this.m_IsAnim = true;
-            let idx = RandomInt(0, this.m_Ducks.length - 1);
-            if (RandomInt(0, 4) == 0) {
-                this.m_Ducks[idx].setFlipX(true);
-            }
-            this.m_Ducks[idx].play("duck-yelp");
-
-            if (TT.NumMax >= 15 && RandomInt(0, 2) == 0) {
-                //移动位置
-                this.PlayWalkAnim(idx);
-
-            }
-        }
+       
 
     }
 
     Reset() {
-        if (TT.NumMax <= 5) {
-            TT.NumDuck = RandomInt(4, 5);
-        }
-        else {
-            TT.NumDuck = RandomInt(TT.NumMax - 4, TT.NumMax);
-        }
-
         this.m_ShowIndex = 0;
         this.m_Card0.RestoreCards();
         TT.IsStart = true;
 
         //重新生成鸭子
-        this.CreateDucks(TT.NumDuck);
-    }
-
-    CreateDucks(num) {
-        this.DestroyDucks();
-        let col = 10;
-        let row = 10;
-        let posIdxs = GetRandQueueInRange(num / 2, 0, 50);
-        let posIdxs2 = GetRandQueueInRange(num / 2, 51, 99);
-        posIdxs = posIdxs.concat(posIdxs2);
-        posIdxs.sort((a, b) => a - b);
-        for (let i = 0; i < num; i++) {
-            let posIdx = posIdxs[i];
-            let posx = posIdx % col;
-            let posy = parseInt(posIdx / col);
-            let duck0 = this.add.sprite(posx * (500 / col) + 140, posy * (780 / row) + 320, 'duck', 0).setOrigin(0.5);
-            duck0.setScale(1.4);
-            if (RandomInt(0, 3) == 0) {
-                duck0.setFlipX(true);
-            }
-
-            let mm = RandomInt(0, 4);
-            if(mm == 0){
-                duck0.setX(duck0.x - this.m_Step);
-            }
-            else if(mm == 1){
-                duck0.setX(duck0.x + this.m_Step);
-            }
-            mm = RandomInt(0, 4);
-            if(mm == 0){
-                duck0.setY(duck0.y - this.m_Step);
-            }
-            else if(mm == 1){
-                duck0.setY(duck0.y + this.m_Step);
-            }
-
-            duck0.on('animationcomplete', (animation, frame) => {
-                this.m_IsAnim = false;
-            })
-            this.m_Ducks.push(duck0);
-        }
-    }
-
-    DestroyDucks() {
-        for (let i = this.m_Ducks.length - 1; i >= 0; i--) {
-            this.m_Ducks[i].destroy();
-        }
-
-        this.m_Ducks = [];
+        //this.CreateDucks(TT.NumDuck);
+        TT.eventsCenter.emit('event-createDucks', {  });
     }
 
     CreateRecordMax(){
         if(!this.m_TextRecord){
-            this.m_TextRecord = this.add.text(350, 140, '', {
+            this.m_TextRecord = this.add.text(TT.width/2, TT.height/2-580, '', {
                 fontFamily: '黑体',
                 fontSize: '38px',
                 fill: '#ff0000'
@@ -220,51 +145,23 @@ export default class CountShow extends Phaser.Scene {
         this.m_TextRecord.setText(`最佳记录:${TT.NumRecordMax}只`);
     }
 
-    PlayWalkAnim(idx) {
-        let idir = RandomInt(0, 7);
-        let stepX = 0;
-        let stepY = 0;
-        if (idir == 0) {
-            stepX = this.m_Step;
-            stepY = 0;
-        } else if (idir == 1) {
-            stepX = this.m_Step;
-            stepY = -this.m_Step;
-        } else if (idir == 2) {
-            stepX = 0;
-            stepY = -this.m_Step;
-        } else if (idir == 3) {
-            stepX = -this.m_Step;
-            stepY = -this.m_Step;
-        } else if (idir == 4) {
-            stepX = -this.m_Step;
-            stepY = 0;
-        } else if (idir == 5) {
-            stepX = -this.m_Step;
-            stepY = this.m_Step;
-        } else if (idir == 6) {
-            stepX = 0;
-            stepY = this.m_Step;
-        } else if (idir == 7) {
-            stepX = this.m_Step;
-            stepY = this.m_Step;
-        }
-        let destX = this.m_Ducks[idx].x + stepX;
-        let destY = this.m_Ducks[idx].y + stepY;
-        if (destX >= this.m_MinX && destX <= this.m_MaxX
-            && destY >= this.m_MinY && destY <= this.m_MaxY
-        ) {
-            this.tweens.add({
-                targets: this.m_Ducks[idx],
-                x: destX,
-                y: destY,
-                duration: 400, // 动画持续时间（毫秒）  
-                ease: 'Cubic.easeInOut', // 缓动函数  
-                yoyo: false,
-                onComplete: () => {
-                }
-            });
-        }
+    DrawTitle(){
+        const graphics = this.add.graphics({ fillStyle: { color: 0xff0000, alpha: 0.5 } });
+        graphics.fillRect(-200, TT.CenterY()-520, this.scale.width, 10);
+
+        let textTitle = this.add.text(180, TT.CenterY()-680, '数鸭子', {
+            fontFamily: '黑体',
+            fontSize: '90px',
+            fill: '#000'
+        });
+        // 游戏规则
+        this.m_textRule = this.add.text(-70, TT.CenterY()-480, '游戏规则:\n点击开始游戏，会随机出现小\n鸭子，玩家点击屏幕数鸭子。\n交卷点下方的确认按钮。',
+        {
+            fontFamily: '黑体',
+            fontSize: '40px',
+            fill: '#000'
+        });
     }
+
 
 }

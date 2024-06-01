@@ -12,6 +12,11 @@ class TTGameConfig {
         this.NumMax = 5;
         /** @type {number} */
         this.NumRecordMax = 0;
+
+        /** @type {number} */
+        this.width = window.innerWidth>400?400:window.innerWidth;
+        /** @type {number} */
+        this.height = window.innerHeight>840?840:window.innerHeight;
     }
 
     SaveRecord(){
@@ -31,6 +36,14 @@ class TTGameConfig {
         localStorage.removeItem("data");
         this.NumMax = 5;
         this.NumRecordMax = 0;
+    }
+
+    CenterX(){
+        return 0.5 * this.width;
+    }
+
+    CenterY(){
+        return 0.5 * this.height;
     }
 }
  

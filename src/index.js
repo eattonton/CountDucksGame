@@ -1,22 +1,26 @@
 import Phaser from "phaser";
 import TT from "./gameconfig";
-import TitleScene from "./scene/titlescene"
 import CountShow from "./scene/countshow";
 import Menu from "./scene/menu";
 import MultiPlayer from "./scene/multiplayerscene";
 import Preload from "./scene/preload";
+import Ducks from "./scene/ducks";
 
 const config = {
     type: Phaser.AUTO,
     backgroundColor: 0xffffff,
-    scale: {
-        mode: Phaser.Scale.HEIGHT_CONTROLS_WIDTH,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
+    width:1920,
+    height:1080,
+    //scale: {
+     //   mode: Phaser.Scale.HEIGHT_CONTROLS_WIDTH,
+        //mode:Phaser.Scale.WIDTH_CONTROLS_HEIGHT,
+        //mode:Phaser.Scale.NONE,
+        //autoCenter: Phaser.Scale.NO_CENTER,
        // width: window.innerWidth,
        // height: window.innerHeight
-       width:720,
-       height:1280
-    },
+       //width:1280,
+       //height:720
+    //},
     pixelArt: true,
     physics:{
         default: "arcade",
@@ -25,7 +29,7 @@ const config = {
             gravity: {y:0}
         },
     },
-    scene:[Preload,CountShow,Menu,TitleScene,MultiPlayer]
+    scene:[Preload,CountShow,MultiPlayer,Ducks,Menu]
  
 }
 
@@ -39,4 +43,4 @@ class GameConfig extends Phaser.Game {
 }
 
 TT.game = new GameConfig(config);
-
+ 

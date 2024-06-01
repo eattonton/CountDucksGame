@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import TT from "../gameconfig"
 
 export class OneTimeCard {
     /** @type {Array<Phaser.GameObjects.Sprite>} */
@@ -129,8 +130,8 @@ export class TimeCards {
  * @param {*} cb 
  */
 export function StartTimeCountDown(scene, cb) {
-    const centerX = scene.scale.width / 2;
-    const centerY = scene.scale.height / 2;
+    const centerX = TT.width / 2;
+    const centerY = TT.height / 2;
     // 创建一个图形对象并绘制一个灰色矩形作为背景  
     //let graphics2 = CreateSceneMask(scene);
 
