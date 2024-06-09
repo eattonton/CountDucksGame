@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 
 class TTGameConfig {
+    
     constructor() {
         this.game = {};
         this.eventsCenter = new Phaser.Events.EventEmitter();
@@ -8,15 +9,36 @@ class TTGameConfig {
         this.NumDuck = 0;
         /**@type {boolean} 是否开始*/
         this.IsStart = false;
-        /** @type {number} */
+        /** @type {number} 最大数量*/
         this.NumMax = 5;
+        /** @type {number} 最大数量*/
+        this.NumMax2 = 5;
         /** @type {number} */
         this.NumRecordMax = 0;
 
         /** @type {number} */
-        this.width = window.innerWidth>400?400:window.innerWidth;
+        this.width = 0;
         /** @type {number} */
-        this.height = window.innerHeight>840?840:window.innerHeight;
+        this.height = 0;
+
+        /** @type {boolean} */
+        this.IsMultiPlayer = false;
+        /** @type {boolean} */
+        this.IsFullScreen = false;
+
+        /** @type {boolean} */
+        this.IsLandscape = false;
+
+        /** @type {number} */
+        this.Zoom = 0.5;
+
+        this.ENUMPosition = {
+            Center:0,
+            LeftTop:1,
+            RightTop:2,
+            LeftBottom:3,
+            RightBottom:4
+        }
     }
 
     SaveRecord(){
@@ -38,13 +60,14 @@ class TTGameConfig {
         this.NumRecordMax = 0;
     }
 
-    CenterX(){
-        return 0.5 * this.width;
+    GetX(){
+
     }
 
-    CenterY(){
-        return 0.5 * this.height;
+    GetY(){
+
     }
+
 }
  
 const instance = new TTGameConfig();

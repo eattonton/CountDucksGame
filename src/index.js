@@ -6,41 +6,51 @@ import MultiPlayer from "./scene/multiplayerscene";
 import Preload from "./scene/preload";
 import Ducks from "./scene/ducks";
 
+const ScreenScale = 1080/1920;
+const ScreenHeight = window.innerHeight;
+const ScreenWidth = window.innerHeight * ScreenScale;
+
 const config = {
     type: Phaser.AUTO,
     backgroundColor: 0xffffff,
-    width:1920,
-    height:1080,
-    //scale: {
-     //   mode: Phaser.Scale.HEIGHT_CONTROLS_WIDTH,
-        //mode:Phaser.Scale.WIDTH_CONTROLS_HEIGHT,
-        //mode:Phaser.Scale.NONE,
-        //autoCenter: Phaser.Scale.NO_CENTER,
-       // width: window.innerWidth,
-       // height: window.innerHeight
-       //width:1280,
-       //height:720
-    //},
+    width: ScreenWidth,
+    height: ScreenHeight,
+    // scale: {
+    //     mode: Phaser.Scale.HEIGHT_CONTROLS_WIDTH,
+    //     autoCenter: Phaser.Scale.CENTER,
+    //     width: 1080,
+    //     height: 1920
+    // },
     pixelArt: true,
-    physics:{
+    physics: {
         default: "arcade",
-        arcade:{
-            debug:true,
-            gravity: {y:0}
+        arcade: {
+            debug: true,
+            gravity: { y: 0 }
         },
     },
-    scene:[Preload,CountShow,MultiPlayer,Ducks,Menu]
- 
+    input: {
+        gamepad: true
+    },
+    scene: [Preload, CountShow, MultiPlayer, Ducks, Menu]
+
 }
 
 class GameConfig extends Phaser.Game {
+    //显示尺寸
     width = parseInt(this.config.width);
     height = parseInt(this.config.height);
 
-    constructor (config) {
+    constructor(config) {
+        //画布尺寸
+        //TT.width = 1080;
+        //TT.height = 1920;
+        TT.Zoom = ScreenHeight / 1920;
+        if(window.innerWidth > window.innerHeight){
+            TT.IsLandscape = true;  //横屏
+        }
         super(config);
     }
 }
 
 TT.game = new GameConfig(config);
- 

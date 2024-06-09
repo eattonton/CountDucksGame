@@ -16,8 +16,8 @@ export default class Ducks extends Phaser.Scene{
  
     m_MinX = 0;
     m_MinY = 0;
-    m_MaxX = TT.width;
-    m_MaxY = TT.height;
+    m_MaxX = 400;
+    m_MaxY = 1100;
     m_Step = 20;
      
     preload(){
@@ -25,10 +25,13 @@ export default class Ducks extends Phaser.Scene{
     }
 
     create(){
-        this.cameras.main.setViewport(0,0,TT.width,TT.height);
-        this.cameras.main.setZoom(0.6);
+        this.cameras.main.setZoom(TT.Zoom*1.4);
         // 监听事件  
         TT.eventsCenter.on('event-createDucks', (data) => {
+            this.m_MaxX = 600;
+            this.m_MaxY = 900;
+            this.cameras.main.setRotation(0);
+            this.cameras.main.centerOn(0.5*this.m_MaxX, 0.5*this.m_MaxY);
             if (TT.NumMax <= 5) {
                 TT.NumDuck = RandomInt(4, 5);
             }
@@ -39,7 +42,20 @@ export default class Ducks extends Phaser.Scene{
         })
 
         TT.eventsCenter.on('event-createDucksB', (data)=>{
-            this.DestroyDucks();
+            if(!TT.IsLandscape){
+                //竖屏
+                this.cameras.main.setRotation(0.5*Math.PI);
+            } 
+            this.m_MaxX = 1200;
+            this.m_MaxY = 400;
+            if (TT.NumMax2 <= 5) {
+                TT.NumDuck = RandomInt(4, 5);
+            }
+            else {
+                TT.NumDuck = RandomInt(TT.NumMax2 - 4, TT.NumMax2);
+            }    
+            this.cameras.main.centerOn(0.5*this.m_MaxX-50, 0.5*this.m_MaxY);
+            this.CreateDucks(TT.NumDuck);
         })
     }
 
@@ -65,6 +81,18 @@ export default class Ducks extends Phaser.Scene{
         }
     }
 
+    RotateScene() {
+        //竖直
+        this.cameras.main.setRotation(0.5*Math.PI);
+        this.cameras.main.centerOn(0.5*this.m_MaxX-50, 0.5*this.m_MaxY);
+ 
+    }
+
+    RestoreScene() {
+        //横屏
+        this.cameras.main.setRotation(0);
+        this.cameras.main.centerOn(0.5*this.m_MaxX-50, 0.5*this.m_MaxY);
+    }
     
     CreateDucks(num) {
         this.DestroyDucks();
@@ -113,7 +141,6 @@ export default class Ducks extends Phaser.Scene{
 
         this.m_Ducks = [];
     }
-
     
     PlayWalkAnim(idx) {
         let idir = RandomInt(0, 7);

@@ -12,8 +12,10 @@ export default class Menu extends Phaser.Scene {
     preload() {
 
     }
-    //是否答对了
+    /** @type {boolean} 是否答对了 */
     m_isSuccess = false;
+    /** @type {number} 答对用户 */
+    m_userIndex = -1;
     /** @type {Phaser.GameObjects.Container} */
     m_containerDlg = null;
 
@@ -21,18 +23,29 @@ export default class Menu extends Phaser.Scene {
     m_containerMenu = null;
 
     create() {
-        let centerX = TT.width / 2;
-        let centerY = TT.height / 2;
         //let mask = CreateSceneMask(this);
-        this.m_containerDlg = this.CreateResultDlg(centerX, centerY);
+        this.m_containerDlg = this.CreateResultDlg(0, 0);
         this.m_containerDlg.setVisible(false);
 
-        this.m_containerMenu = this.CreateMenuDlg(centerX, centerY);
+        this.m_containerMenu = this.CreateMenuDlg(0, 0);
         //this.m_containerMenu.setVisible(false);
-       // this.cameras.main.setViewport(0,0,window.innerWidth,window.innerHeight);
-       this.cameras.main.setViewport(0,0,TT.width,TT.height);
-       this.cameras.main.setZoom(0.6);
-       
+
+        this.cameras.main.centerOn(0, 0);
+        this.cameras.main.setZoom(TT.Zoom * 1.4);
+    }
+
+    RotateScene() {
+        if (!TT.IsLandscape) {
+            //竖直
+            this.cameras.main.setRotation(0.5 * Math.PI);
+            this.cameras.main.centerOn(0, 0);
+        }
+    }
+
+    RestoreScene() {
+        //横屏
+        this.cameras.main.setRotation(0);
+        this.cameras.main.centerOn(0, 0);
     }
 
     CreateMenuDlg(centerX, centerY) {
@@ -48,7 +61,7 @@ export default class Menu extends Phaser.Scene {
         let btnA = this.CreateBtnSingle();
         let btnB = this.CreateBtnDouble();
         let btnC = this.CreateBtnClear();
-         
+
         let container = this.add.container(centerX, centerY);
         container.add(dlg);
         container.add(btnA);
@@ -104,41 +117,86 @@ export default class Menu extends Phaser.Scene {
         TT.eventsCenter.on('event-buttonOk', (data) => {
             this.m_containerMenu.setVisible(false);
             this.m_containerDlg.setVisible(true);
-            if (data["numDuck"] == data["numUser"]) {
-                wrong.setVisible(false);
-                win.setVisible(true);
-                text.setText("真厉害");
-                this.m_isSuccess = true;
-                if (data["numDuck"] > TT.NumRecordMax) {
-                    TT.NumRecordMax = data["numDuck"];
-                }
+            if (data["type"] == "resultTwo") {
+                this.ResultTwo(data, text, wrong, win);
             } else {
-                wrong.setVisible(true);
-                win.setVisible(false);
-                text.setText(`错啦,有${data["numDuck"]}只`);
-                this.m_isSuccess = false;
+                this.ResultSingle(data, text, wrong, win);
             }
         });
 
         return container;
     }
 
+    ResultSingle(data, text, wrong, win) {
+        if (data["numDuck"] == data["numUser"]) {
+            wrong.setVisible(false);
+            win.setVisible(true);
+            text.setText("真厉害");
+            this.m_isSuccess = true;
+            if (data["numDuck"] > TT.NumRecordMax) {
+                TT.NumRecordMax = data["numDuck"];
+            }
+        } else {
+            wrong.setVisible(true);
+            win.setVisible(false);
+            text.setText(`错啦,有${data["numDuck"]}只`);
+            this.m_isSuccess = false;
+        }
+    }
+
+    ResultTwo(data, text, wrong, win){
+        if (data["numDuck"] == data["numUserA"] || data["numDuck"] == data["numUserB"]){
+            wrong.setVisible(false);
+            win.setVisible(true);
+            this.m_isSuccess = true;
+            if (data["numDuck"] > TT.NumRecordMax) {
+                TT.NumRecordMax = data["numDuck"];
+            }
+        } else {
+            wrong.setVisible(true);
+            win.setVisible(false);
+            text.setText(`错啦,有${data["numDuck"]}只`);
+            this.m_isSuccess = false;
+        }
+        this.m_userIndex = -1;
+        if (data["numDuck"] == data["numUserA"] && data["numDuck"] == data["numUserB"]) {
+            text.setText("都很厉害");
+            this.m_userIndex = 10;
+        } else if (data["numDuck"] == data["numUserA"] && data["numDuck"] != data["numUserB"]) {
+            text.setText("红色真厉害");
+            this.m_userIndex = 0;
+        }else if (data["numDuck"] != data["numUserA"] && data["numDuck"] == data["numUserB"]) {
+            text.setText("蓝色真厉害");
+            this.m_userIndex = 1;
+        }
+    }
+
     CreateBtnNext() {
         return this.CreateButton(0, 140, "继  续", (pointer, event) => {
             this.scene.sleep('Menu');
-            TT.eventsCenter.emit('event-buttonNext', { data: this.m_isSuccess });
+            if(TT.IsMultiPlayer){
+                TT.eventsCenter.emit('event-buttonNext2', { data: this.m_isSuccess,userIndex:this.m_userIndex });
+            }else{
+                TT.eventsCenter.emit('event-buttonNext', { data: this.m_isSuccess });
+            }
+            
         });
     }
 
     CreateBtnSingle() {
         return this.CreateButton(0, -120, "单人玩", (pointer, event) => {
+            TT.IsMultiPlayer = false;
             this.scene.sleep('Menu');
+            this.scene.sleep('MultiPlayer');
+            this.scene.wake('CountShow');
+            this.scene.wake('TitleScene');
             TT.eventsCenter.emit('event-buttonNext', { data: false });
         });
     }
 
     CreateBtnDouble() {
         return this.CreateButton(0, 0, "双人玩", (pointer, event) => {
+            TT.IsMultiPlayer = true;
             this.scene.sleep('CountShow');
             this.scene.sleep('Menu');
             this.scene.sleep('TitleScene');

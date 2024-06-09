@@ -10,6 +10,7 @@ import pngLogo from "../assets/logo.png"
 import pngMenu from "../assets/menu.png"
 import mp3Yelp from "../assets/yelp.mp3"
 import pngController from "../assets/controller.png"
+import pngFull from "../assets/fullscreen.png"
 
 export default class Preload extends Phaser.Scene {
     constructor() {
@@ -32,12 +33,13 @@ export default class Preload extends Phaser.Scene {
         this.load.image('btnMenu',pngMenu);
         this.load.audio('musicYelp', mp3Yelp);
         this.load.image('iconController', pngController);
+        this.load.image('iconFull', pngFull);
         // 监听加载过程
         this.load.on('progress', (value) => {
             this.UpdateProgressBar(value)
         });
         this.load.on('complete', () => {
-            this.LoadComplete();
+           this.LoadComplete();
         });
     }
 
@@ -63,7 +65,7 @@ export default class Preload extends Phaser.Scene {
         }
         this.m_ProgressBar.clear();
         this.m_ProgressBar.fillStyle(0x3f72af);
-        this.m_ProgressBar.fillRoundedRect(100, 490, 520 * progress, 90, 38);
+        this.m_ProgressBar.fillRoundedRect(50, 200, 350 * progress, 40, 15);
     }
 
     // 加载完成
@@ -73,8 +75,6 @@ export default class Preload extends Phaser.Scene {
         this.scene.launch('Ducks');
         this.scene.launch('Menu');
         this.scene.launch('CountShow');
-        //this.scene.sleep('Menu');
-        
         this.scene.sleep('TitleScene');
         this.scene.launch('MultiPlayer');
         this.scene.sleep('MultiPlayer');
